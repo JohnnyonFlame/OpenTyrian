@@ -531,7 +531,7 @@ static void hqs1dot2_16( SDL_Surface *src_surface, SDL_Surface *dst_surface )
 	int dst_pitch = dst_surface->pitch/2;
 
 	/*
-	 * Draw known columns. (39 out of each 40 in six groups are available.)
+	 * Draw known rows. (39 out of each 40 in six groups are available.)
 	 */
 	int i,j,l;
 	for (i=0; i<40; i++)
@@ -547,7 +547,7 @@ static void hqs1dot2_16( SDL_Surface *src_surface, SDL_Surface *dst_surface )
 	}
 
 	/*
-	 * Start over, let's draw unknown columns by doing the average of two known ones. (up+down)
+	 * Start over, let's draw unknown rows by doing the average of two known ones. (up+down)
 	 */
 	dst = dst_surface->pixels;
 
@@ -581,7 +581,7 @@ static void hqs1dot2_32( SDL_Surface *src_surface, SDL_Surface *dst_surface )
 	int dst_pitch = dst_surface->pitch/4;
 
 	/*
-	 * Draw known columns. (39 out of each 40 in six groups are available.)
+	 * Draw known rows. (39 out of each 40 in six groups are available.)
 	 */
 	int i,j,l;
 	for (i=0; i<40; i++)
@@ -597,7 +597,7 @@ static void hqs1dot2_32( SDL_Surface *src_surface, SDL_Surface *dst_surface )
 	}
 
 	/*
-	 * Start over, let's draw unknown columns by doing the average of two known ones. (up+down)
+	 * Start over, let's draw unknown rows by doing the average of two known ones. (up+down)
 	 */
 	dst = dst_surface->pixels;
 
