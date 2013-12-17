@@ -556,7 +556,8 @@ static void hqs1dot2_16( SDL_Surface *src_surface, SDL_Surface *dst_surface )
 
 		for (j=0; j<320; j++) {
 			Uint16 C1 = *(dst-dst_pitch),C2 = *(dst+dst_pitch);
-			*dst = (((C1 & 0xF7DE) >> 1) + ((C2 & 0xF7DE) >> 1)) + (C1 & C2 & 0x0821);
+			*dst = (((C1 & 0xF7DE) >> 1) + ((C2 & 0xF7DE) >> 1)) //Average upper and lower pixel- lose some precision
+					+ (C1 & C2 & 0x0821); //Error correction
 
 			dst++;
 		}
@@ -594,28 +595,13 @@ static void hqs1dot2_32( SDL_Surface *src_surface, SDL_Surface *dst_surface )
 	for (i=0; i<39; i++) {
 		dst += dst_pitch * 5;
 
-#define _r(a) (((a)&0xFF000000) >> 24)
-#define _g(a) (((a)&0x00FF0000) >> 16)
-#define _b(a) (((a)&0x0000FF00) >> 8)
-#define _x(a) (((a)&0x000000FF))
-
 		for (j=0; j<320; j++) {
-			/**dst =
-				((_r(*(dst-dst_pitch)) + _r(*(dst+dst_pitch))) << 23 & 0xFF000000)|
-				((_g(*(dst-dst_pitch)) + _g(*(dst+dst_pitch))) << 15 & 0x00FF0000)|
-				((_b(*(dst-dst_pitch)) + _b(*(dst+dst_pitch))) <<  7 & 0x0000FF00)|
-				((_x(*(dst-dst_pitch)) + _x(*(dst+dst_pitch))) >>  1 & 0x000000FF);*/
-
-			//We can afford to lose a little of precision on 32bpp. Won't be noticed.
-			*dst = (((*(dst-dst_pitch) & 0xFEFEFEFE) >> 1) + ((*(dst+dst_pitch) & 0xFEFEFEFE) >> 1));
+			Uint32 C1 = *(dst-dst_pitch), C2 = *(dst+dst_pitch);
+			*dst = (((C1 & 0xFEFEFEFE) >> 1) + ((C2 & 0xFEFEFEFE) >> 1)) //Average upper and lower pixel- lose some precision.
+					+ (C1 & C2 & 0x01010101); //Error Correction
 
 			dst++;
 		}
-
-#undef _r
-#undef _g
-#undef _b
-#undef _x
 	}
 }
 
