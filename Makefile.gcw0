@@ -2,6 +2,7 @@
 
 CC=mipsel-linux-gcc
 CXX=mipsel-linux-g++
+STRIP=mipsel-linux-strip
 
 PLATFORM := UNIX
 
@@ -11,12 +12,12 @@ WITH_NETWORK := true
 
 ############################################################
 
-STRIP := strip
-
 SDL_CONFIG := sdl-config
 
 SRCS := $(wildcard src/*.c)
 OBJS := $(SRCS:src/%.c=obj/%.o)
+OPK  := $(TARGET) linux/icons/tyrian-32.png gcw0/default.gcw0.desktop data/
+
 
 # FLAGS ####################################################
 
@@ -71,3 +72,7 @@ obj/%.o : src/%.c
 	@mkdir -p "$(dir $@)"
 	$(CC) -c -o $@ $(ALL_CFLAGS) $<
 
+opk: all
+	$(STRIP) $(TARGET)	
+	@rm -f $(TARGET).opk
+	@mksquashfs $(OPK) $(TARGET).opk
