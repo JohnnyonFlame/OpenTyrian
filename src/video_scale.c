@@ -36,6 +36,12 @@ static void scale2x_32( SDL_Surface *src_surface, SDL_Surface *dst_surface );
 static void scale2x_16( SDL_Surface *src_surface, SDL_Surface *dst_surface );
 static void scale3x_32( SDL_Surface *src_surface, SDL_Surface *dst_surface );
 static void scale3x_16( SDL_Surface *src_surface, SDL_Surface *dst_surface );
+#else
+static void s1dot2_16( SDL_Surface *src_surface, SDL_Surface *dst_surface );
+static void s1dot2_32( SDL_Surface *src_surface, SDL_Surface *dst_surface );
+
+static void hqs1dot2_16( SDL_Surface *src_surface, SDL_Surface *dst_surface );
+static void hqs1dot2_32( SDL_Surface *src_surface, SDL_Surface *dst_surface );
 #endif
 
 void hq2x_32( SDL_Surface *src_surface, SDL_Surface *dst_surface );
@@ -48,6 +54,8 @@ const struct Scalers scalers[] =
 {
 #if defined(TARGET_GP2X) || defined(TARGET_DINGUX)
 	{ 320,           240,            no_scale, nn_16,      nn_32,      "None" },
+	{ 320,           240,            NULL,     s1dot2_16,  s1dot2_32,  "Scale1.2x" },
+	{ 320,           240,            NULL,     hqs1dot2_16,hqs1dot2_32,"hq1.2x" },
 #else
 	{ 1 * vga_width, 1 * vga_height, no_scale, nn_16,      nn_32,      "None" },
 	{ 2 * vga_width, 2 * vga_height, NULL,     nn_16,      nn_32,      "2x" },
@@ -438,3 +446,184 @@ void scale3x_16( SDL_Surface *src_surface, SDL_Surface *dst_surface )
 	}
 }
 
+#if defined(TARGET_GP2X) || defined(TARGET_DINGUX)
+static void s1dot2_16( SDL_Surface *src_surface, SDL_Surface *dst_surface )
+{
+	Uint8 * src = src_surface->pixels;
+	Uint16* dst = dst_surface->pixels;
+
+	int dst_pitch = dst_surface->pitch/2;
+
+	/*
+	 * Draw known collumns. (39 outta each 40 in a group of four are available.)
+	 */
+	int i,j,l;
+	for (i=0; i<40; i++)
+	{
+		for (j=0; j<5; j++)
+		{
+			for (l=0; l<320; l++)
+			{
+				*dst++ = rgb_palette[*src++];
+			}
+		}
+		dst += dst_pitch;
+	}
+
+	/*
+	 * Start over, let's drawn unknown collumns by doing the average of two knowns. (up+down)
+	 */
+	dst = dst_surface->pixels;
+
+	for (i=0; i<40; i++) {
+		dst += dst_pitch * 5;
+
+		for (j=0; j<320; j++) {
+			*dst = *(dst-dst_pitch);
+			dst++;
+		}
+	}
+}
+
+static void s1dot2_32( SDL_Surface *src_surface, SDL_Surface *dst_surface )
+{
+	Uint8 * src = src_surface->pixels;
+	Uint32* dst = dst_surface->pixels;
+
+	int dst_pitch = dst_surface->pitch/4;
+
+	/*
+	 * Draw known collumns. (39 outta each 40 in a group of four are available.)
+	 */
+	int i,j,l;
+	for (i=0; i<40; i++)
+	{
+		for (j=0; j<5; j++)
+		{
+			for (l=0; l<320; l++)
+			{
+				*dst++ = rgb_palette[*src++];
+			}
+		}
+		dst += dst_pitch;
+	}
+
+	/*
+	 * Start over, let's drawn unknown collumns by doing the average of two knowns. (up+down)
+	 */
+	dst = dst_surface->pixels;
+
+	for (i=0; i<40; i++) {
+		dst += dst_pitch * 5;
+
+		for (j=0; j<320; j++) {
+			*dst = *(dst-dst_pitch);
+			dst++;
+		}
+	}
+}
+
+static void hqs1dot2_16( SDL_Surface *src_surface, SDL_Surface *dst_surface )
+{
+	Uint8 * src = src_surface->pixels;
+	Uint16* dst = dst_surface->pixels;
+
+	int dst_pitch = dst_surface->pitch/2;
+
+	/*
+	 * Draw known columns. (39 out of each 40 in six groups are available.)
+	 */
+	int i,j,l;
+	for (i=0; i<40; i++)
+	{
+		for (j=0; j<5; j++)
+		{
+			for (l=0; l<320; l++)
+			{
+				*dst++ = rgb_palette[*src++];
+			}
+		}
+		dst += dst_pitch;
+	}
+
+	/*
+	 * Start over, let's draw unknown columns by doing the average of two known ones. (up+down)
+	 */
+	dst = dst_surface->pixels;
+
+	for (i=0; i<39; i++) {
+		dst += dst_pitch * 5;
+
+#define _r(a) (((a)&0xF800) >> 10)
+#define _g(a) (((a)&0x07E0) >> 6)
+#define _b(a) (((a)&0x001F))
+
+		for (j=0; j<320; j++) {
+			*dst =
+				((_r(*(dst-dst_pitch)) + _r(*(dst+dst_pitch))) << 9 & 0xF800)|
+				((_g(*(dst-dst_pitch)) + _g(*(dst+dst_pitch))) << 5 & 0x07E0)|
+				((_b(*(dst-dst_pitch)) + _b(*(dst+dst_pitch))) >> 1 & 0x001F);
+
+			dst++;
+		}
+
+#undef _r
+#undef _g
+#undef _b
+	}
+}
+
+static void hqs1dot2_32( SDL_Surface *src_surface, SDL_Surface *dst_surface )
+{
+	Uint8 * src = src_surface->pixels;
+	Uint32* dst = dst_surface->pixels;
+
+	int dst_pitch = dst_surface->pitch/4;
+
+	/*
+	 * Draw known columns. (39 out of each 40 in six groups are available.)
+	 */
+	int i,j,l;
+	for (i=0; i<40; i++)
+	{
+		for (j=0; j<5; j++)
+		{
+			for (l=0; l<320; l++)
+			{
+				*dst++ = rgb_palette[*src++];
+			}
+		}
+		dst += dst_pitch;
+	}
+
+	/*
+	 * Start over, let's draw unknown columns by doing the average of two known ones. (up+down)
+	 */
+	dst = dst_surface->pixels;
+
+	for (i=0; i<39; i++) {
+		dst += dst_pitch * 5;
+
+#define _r(a) (((a)&0xFF000000) >> 24)
+#define _g(a) (((a)&0x00FF0000) >> 16)
+#define _b(a) (((a)&0x0000FF00) >> 8)
+#define _x(a) (((a)&0x000000FF))
+
+		for (j=0; j<320; j++) {
+			*dst =
+				((_r(*(dst-dst_pitch)) + _r(*(dst+dst_pitch))) << 23 & 0xFF000000)|
+				((_g(*(dst-dst_pitch)) + _g(*(dst+dst_pitch))) << 15 & 0x00FF0000)|
+				((_b(*(dst-dst_pitch)) + _b(*(dst+dst_pitch))) <<  7 & 0x0000FF00)|
+				((_x(*(dst-dst_pitch)) + _x(*(dst+dst_pitch))) >>  1 & 0x000000FF);
+
+			dst++;
+		}
+
+#undef _r
+#undef _g
+#undef _b
+#undef _x
+	}
+}
+
+#endif
