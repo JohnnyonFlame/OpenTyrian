@@ -148,6 +148,7 @@ void service_SDL_events( JE_boolean clear_new )
 				mouse_y = ev.motion.y * vga_height / scalers[scaler].height;
 				break;
 			case SDL_KEYDOWN:
+#if !defined(TARGET_DINGUX) && !defined(TARGET_GP2X)
 				if (ev.key.keysym.mod & KMOD_CTRL)
 				{
 					/* <ctrl><bksp> emergency kill */
@@ -194,6 +195,7 @@ void service_SDL_events( JE_boolean clear_new )
 						break;
 					}
 				}
+#endif
 
 				keysactive[ev.key.keysym.sym] = 1;
 				
