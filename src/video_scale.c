@@ -610,11 +610,14 @@ static void hqs1dot2_32( SDL_Surface *src_surface, SDL_Surface *dst_surface )
 #define _x(a) (((a)&0x000000FF))
 
 		for (j=0; j<320; j++) {
-			*dst =
+			/**dst =
 				((_r(*(dst-dst_pitch)) + _r(*(dst+dst_pitch))) << 23 & 0xFF000000)|
 				((_g(*(dst-dst_pitch)) + _g(*(dst+dst_pitch))) << 15 & 0x00FF0000)|
 				((_b(*(dst-dst_pitch)) + _b(*(dst+dst_pitch))) <<  7 & 0x0000FF00)|
-				((_x(*(dst-dst_pitch)) + _x(*(dst+dst_pitch))) >>  1 & 0x000000FF);
+				((_x(*(dst-dst_pitch)) + _x(*(dst+dst_pitch))) >>  1 & 0x000000FF);*/
+
+			//We can afford to lose a little of precision on 32bpp. Won't be noticed.
+			*dst = (((*(dst-dst_pitch) & 0xFEFEFEFE) >> 1) + ((*(dst+dst_pitch) & 0xFEFEFEFE) >> 1));
 
 			dst++;
 		}
