@@ -1642,10 +1642,57 @@ void JE_highScoreCheck( void )
 					}
 					else if (newkey)
 					{
+#ifndef TARGET_DINGUX
 						bool validkey = false;
+#endif
 						lastkey_char = toupper(lastkey_char);
 						switch((lastkey_sym < 255) ? lastkey_char : lastkey_sym)
 						{
+#ifdef TARGET_DINGUX
+							case SDLK_UP:
+								temp = (temp==0) ? 1 : temp;
+
+								stemp[temp-1]++;
+								stemp[temp-1] = (stemp[temp-1]<' ') ? ' ' : (stemp[temp-1]>'z') ? ' ' : stemp[temp-1]; //delimit character range
+								break;
+							case SDLK_DOWN:
+								temp = (temp==0) ? 1 : temp;
+
+								stemp[temp-1]--;
+								stemp[temp-1] = (stemp[temp-1]<' ') ? 'z' : (stemp[temp-1]>'z') ? 'z' : stemp[temp-1]; //delimit character range
+								break;
+
+							case SDLK_LEFT:
+								if (temp > 0) {
+									temp--;
+									stemp[temp] = ' ';
+								}
+								break;
+							case SDLK_RIGHT:
+								if (temp < 29) {
+									temp++;
+								}
+								break;
+							case SDLK_LSHIFT:
+								//Change character case. If not 'a-z' or 'A-Z', then make it so god damned it.
+								temp = (temp==0) ? 1 : temp;
+								stemp[temp-1] = (stemp[temp-1]<' ') ? ' ' : (stemp[temp-1]>'z') ? 'z' : stemp[temp-1]; //delimit character range before.
+
+								if (stemp[temp-1] == tolower(stemp[temp-1]))
+								{
+									if (stemp[temp-1] == toupper(stemp[temp-1])) //if == tolower AND toupper, not 'a-z' or 'A-Z'
+									{
+										stemp[temp-1] = 'a';
+									}
+									else
+										stemp[temp-1] = toupper(stemp[temp-1]);
+								}
+								else
+								{
+									stemp[temp-1] = tolower(stemp[temp-1]);
+								}
+								break;
+#else
 							case ' ':
 							case '-':
 							case '.':
@@ -1676,6 +1723,7 @@ void JE_highScoreCheck( void )
 									temp++;
 								}
 								break;
+#endif
 							case SDLK_BACKSPACE:
 							case SDLK_DELETE:
 								if (temp)
@@ -2480,10 +2528,63 @@ void JE_operation( JE_byte slot )
 			}
 			else if (newkey)
 			{
+#ifndef TARGET_DINGUX //ok, you win gcc.
 				bool validkey = false;
+#endif
 				lastkey_char = toupper(lastkey_char);
 				switch ((lastkey_sym < 255) ? lastkey_char : lastkey_sym)
 				{
+#ifdef TARGET_DINGUX
+					case SDLK_UP:
+						temp = (temp==0) ? 1 : temp;
+
+						stemp[temp-1]++;
+						stemp[temp-1] = (stemp[temp-1]<' ') ? ' ' : (stemp[temp-1]>'z') ? ' ' : stemp[temp-1]; //delimit character range
+						JE_playSampleNum(S_CLICK);
+						break;
+					case SDLK_DOWN:
+						temp = (temp==0) ? 1 : temp;
+
+						stemp[temp-1]--;
+						stemp[temp-1] = (stemp[temp-1]<' ') ? 'z' : (stemp[temp-1]>'z') ? 'z' : stemp[temp-1]; //delimit character range
+						JE_playSampleNum(S_CLICK);
+						break;
+
+					case SDLK_LEFT:
+						if (temp > 0) {
+							temp--;
+							stemp[temp] = ' ';
+							JE_playSampleNum(S_CURSOR);
+						}
+						break;
+					case SDLK_RIGHT:
+						if (temp < 15) {
+							temp++;
+							JE_playSampleNum(S_CURSOR);
+						}
+						break;
+					case SDLK_LSHIFT:
+						//Change character case. If not 'a-z' or 'A-Z', then make it so god damned it.
+						temp = (temp==0) ? 1 : temp;
+						stemp[temp-1] = (stemp[temp-1]<' ') ? ' ' : (stemp[temp-1]>'z') ? 'z' : stemp[temp-1]; //delimit character range before.
+
+						if (stemp[temp-1] == tolower(stemp[temp-1]))
+						{
+							if (stemp[temp-1] == toupper(stemp[temp-1])) //if == tolower AND toupper, not 'a-z' or 'A-Z'
+							{
+								stemp[temp-1] = 'a';
+							}
+							else
+								stemp[temp-1] = toupper(stemp[temp-1]);
+						}
+						else
+						{
+							stemp[temp-1] = tolower(stemp[temp-1]);
+						}
+
+						JE_playSampleNum(S_CLICK);
+						break;
+#else
 					case ' ':
 					case '-':
 					case '.':
@@ -2515,6 +2616,7 @@ void JE_operation( JE_byte slot )
 							temp++;
 						}
 						break;
+#endif
 					case SDLK_BACKSPACE:
 					case SDLK_DELETE:
 						if (temp)
