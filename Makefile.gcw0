@@ -31,10 +31,12 @@ ifeq ($(WITH_NETWORK), true)
     EXTRA_CFLAGS += -DWITH_NETWORK
 endif
 
-HG_REV := $(shell hg id -ib && touch src/hg_revision.h)
-ifneq ($(HG_REV), )
-    EXTRA_CFLAGS += '-DHG_REV="$(HG_REV)"'
-endif
+#HG_REV := $(shell hg id -ib && touch src/hg_revision.h)
+#ifneq ($(HG_REV), )
+#    EXTRA_CFLAGS += '-DHG_REV="$(HG_REV)"'
+#endif
+
+EXTRA_CFLAGS += -DHG_REV="\"r$(shell git rev-list --reverse HEAD | wc -l)\""
 
 EXTRA_LDLIBS += -lm
 
