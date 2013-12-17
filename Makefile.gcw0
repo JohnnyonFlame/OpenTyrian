@@ -4,7 +4,7 @@ CC=mipsel-linux-gcc
 CXX=mipsel-linux-g++
 STRIP=mipsel-linux-strip
 
-PLATFORM := UNIX
+PLATFORM := DINGUX
 
 TARGET := opentyrian
 
