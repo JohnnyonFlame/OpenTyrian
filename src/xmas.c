@@ -80,9 +80,16 @@ bool xmas_prompt( void )
 					selection %= 2;
 					break;
 					
+#ifdef TARGET_DINGUX
+				case SDLK_LCTRL:
+#else
 				case SDLK_RETURN:
+#endif
 					decided = true;
 					break;
+#ifdef TARGET_DINGUX
+				case SDLK_LALT:
+#endif
 				case SDLK_ESCAPE:
 					decided = true;
 					quit = true;

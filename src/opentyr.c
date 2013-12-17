@@ -199,7 +199,11 @@ void opentyrian_menu( void )
 				}
 				break;
 				
+#ifdef TARGET_DINGUX
+			case SDLK_LCTRL:
+#else
 			case SDLK_RETURN:
+#endif
 				switch (sel)
 				{
 				case MENU_ABOUT:
@@ -261,6 +265,9 @@ void opentyrian_menu( void )
 				}
 				break;
 				
+#ifdef TARGET_DINGUX
+			case SDLK_LALT:
+#endif
 			case SDLK_ESCAPE:
 				quit = true;
 				JE_playSampleNum(S_SPRING);

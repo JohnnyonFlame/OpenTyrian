@@ -122,6 +122,9 @@ void jukebox( void )
 		{
 			switch (lastkey_sym)
 			{
+#ifdef TARGET_DINGUX
+			case SDLK_LALT:
+#endif
 			case SDLK_ESCAPE: // quit jukebox
 			case SDLK_q:
 				trigger_quit = true;
@@ -159,7 +162,11 @@ void jukebox( void )
 				play_song((song_playing > 0 ? song_playing : MUSIC_NUM) - 1);
 				stopped = false;
 				break;
+#ifdef TARGET_DINGUX
+			case SDLK_LCTRL:
+#else
 			case SDLK_RETURN:
+#endif
 			case SDLK_RIGHT:
 			case SDLK_DOWN:
 				play_song((song_playing + 1) % MUSIC_NUM);

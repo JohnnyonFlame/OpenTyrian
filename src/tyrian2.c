@@ -3526,10 +3526,17 @@ bool JE_titleScreen( JE_boolean animate )
 			{
 				switch (lastkey_sym)
 				{
+#ifdef TARGET_DINGUX
+				case SDLK_LALT:
+#endif
 				case SDLK_ESCAPE:
 					quit = true;
 					break;
+#ifdef TARGET_DINGUX
+				case SDLK_LCTRL:
+#else
 				case SDLK_RETURN:
+#endif
 					JE_playSampleNum(S_SELECT);
 					switch (menu)
 					{

@@ -289,9 +289,17 @@ void JE_helpSystem( JE_byte startTopic )
 								break;
 						}
 					}
+#ifdef TARGET_DINGUX
+				} while (!(lastkey_sym == SDLK_LALT || lastkey_sym == SDLK_LCTRL));
+#else
 				} while (!(lastkey_sym == SDLK_ESCAPE || lastkey_sym == SDLK_RETURN));
+#endif
 
+#ifdef TARGET_DINGUX
+				if (lastkey_sym == SDLK_LCTRL)
+#else
 				if (lastkey_sym == SDLK_RETURN)
+#endif
 				{
 					page = topicStart[menu-1];
 					JE_playSampleNum(S_CLICK);
@@ -404,6 +412,7 @@ void JE_helpSystem( JE_byte startTopic )
 					case SDLK_PAGEDOWN:
 					case SDLK_RETURN:
 					case SDLK_SPACE:
+					case SDLK_LCTRL:
 						if (page == MAX_PAGE)
 						{
 							page = 0;
@@ -424,9 +433,17 @@ void JE_helpSystem( JE_byte startTopic )
 
 		if (page == 255)
 		{
+#ifdef TARGET_DINGUX
+			lastkey_sym = SDLK_LALT;
+#else
 			lastkey_sym = SDLK_ESCAPE;
+#endif
 		}
+#ifdef TARGET_DINGUX
+	} while (lastkey_sym != SDLK_LALT);
+#else
 	} while (lastkey_sym != SDLK_ESCAPE);
+#endif
 }
 
 // cost to upgrade a weapon power from power-1 (where power == 0 indicates an unupgraded weapon)
@@ -653,7 +670,11 @@ void JE_loadScreen( void )
 					sel -= 11;
 				}
 				break;
+#ifdef TARGET_DINGUX
+			case SDLK_LCTRL:
+#else
 			case SDLK_RETURN:
+#endif
 				if (sel < max)
 				{
 					if (saveFiles[sel - 1].level > 0)
@@ -671,6 +692,9 @@ void JE_loadScreen( void )
 
 
 				break;
+#ifdef TARGET_DINGUX
+			case SDLK_LALT:
+#endif
 			case SDLK_ESCAPE:
 				quit = true;
 				break;
@@ -990,6 +1014,10 @@ void JE_highScoreScreen( void )
 		{
 			switch (lastkey_sym)
 			{
+#ifdef TARGET_DINGUX
+			case SDLK_LCTRL:
+			case SDLK_LALT:
+#endif
 			case SDLK_RETURN:
 			case SDLK_ESCAPE:
 				quit = true;
@@ -1078,7 +1106,11 @@ void JE_doInGameSetup( void )
 		}
 		quitRequested = false;
 
+#ifdef TARGET_DINGUX
+		keysactive[SDLK_LALT] = false;
+#else
 		keysactive[SDLK_ESCAPE] = false;
+#endif
 
 #ifdef WITH_NETWORK
 		if (isNetworkGame)
@@ -1217,7 +1249,11 @@ JE_boolean JE_inGameSetup( void )
 		{
 			switch (lastkey_sym)
 			{
+#ifdef TARGET_DINGUX
+				case SDLK_LCTRL:
+#else
 				case SDLK_RETURN:
+#endif
 					JE_playSampleNum(S_SELECT);
 					switch (sel)
 					{
@@ -1250,6 +1286,12 @@ JE_boolean JE_inGameSetup( void )
 							break;
 					}
 					break;
+#ifdef TARGET_DINGUX
+				case SDLK_RETURN:
+					keysactive[SDLK_RETURN] = false;
+					//purposeful fall-through
+				case SDLK_LALT:
+#endif
 				case SDLK_ESCAPE:
 					quit = true;
 					JE_playSampleNum(S_SPRING);
@@ -1602,7 +1644,7 @@ void JE_highScoreCheck( void )
 					{
 						bool validkey = false;
 						lastkey_char = toupper(lastkey_char);
-						switch(lastkey_char)
+						switch((lastkey_sym < 255) ? lastkey_char : lastkey_sym)
 						{
 							case ' ':
 							case '-':
@@ -1642,11 +1684,18 @@ void JE_highScoreCheck( void )
 									stemp[temp] = ' ';
 								}
 								break;
+#ifdef TARGET_DINGUX
+							case SDLK_LALT:
+#endif
 							case SDLK_ESCAPE:
 								quit = true;
 								cancel = true;
 								break;
+#ifdef TARGET_DINGUX
+							case SDLK_LCTRL:
+#else
 							case SDLK_RETURN:
+#endif
 								quit = true;
 								break;
 						}
@@ -2433,7 +2482,7 @@ void JE_operation( JE_byte slot )
 			{
 				bool validkey = false;
 				lastkey_char = toupper(lastkey_char);
-				switch (lastkey_char)
+				switch ((lastkey_sym < 255) ? lastkey_char : lastkey_sym)
 				{
 					case ' ':
 					case '-':
@@ -2475,11 +2524,18 @@ void JE_operation( JE_byte slot )
 							JE_playSampleNum(S_CLICK);
 						}
 						break;
+#ifdef TARGET_DINGUX
+					case SDLK_LALT:
+#endif
 					case SDLK_ESCAPE:
 						quit = true;
 						JE_playSampleNum(S_SPRING);
 						break;
+#ifdef TARGET_DINGUX
+					case SDLK_LCTRL:
+#else
 					case SDLK_RETURN:
+#endif
 						quit = true;
 						JE_saveGame(slot, stemp);
 						JE_playSampleNum(S_SELECT);
@@ -2753,7 +2809,11 @@ void JE_mainKeyboardInput( void )
 	pause_pressed = pause_pressed || keysactive[SDLK_p];
 
 	/* in-game setup */
+#ifdef TARGET_DINGUX
+	ingamemenu_pressed = ingamemenu_pressed || keysactive[SDLK_RETURN];
+#else
 	ingamemenu_pressed = ingamemenu_pressed || keysactive[SDLK_ESCAPE];
+#endif
 
 	if (keysactive[SDLK_BACKSPACE])
 	{
