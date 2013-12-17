@@ -43,7 +43,11 @@ const JE_byte cryptKey[10] = /* [1..10] */
 
 const JE_KeySettingType defaultKeySettings =
 {
+#if defined(TARGET_DINGUX) || defined(TARGET_GP2X)
 	SDLK_UP, SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_LCTRL, SDLK_LALT, SDLK_TAB, SDLK_BACKSPACE
+#else
+	SDLK_UP, SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_SPACE, SDLK_RETURN, SDLK_LCTRL, SDLK_LALT
+#endif
 /*	72, 80, 75, 77, 57, 28, 29, 56*/
 };
 
