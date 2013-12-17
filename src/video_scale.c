@@ -554,22 +554,12 @@ static void hqs1dot2_16( SDL_Surface *src_surface, SDL_Surface *dst_surface )
 	for (i=0; i<39; i++) {
 		dst += dst_pitch * 5;
 
-#define _r(a) (((a)&0xF800) >> 10)
-#define _g(a) (((a)&0x07E0) >> 6)
-#define _b(a) (((a)&0x001F))
-
 		for (j=0; j<320; j++) {
-			*dst =
-				((_r(*(dst-dst_pitch)) + _r(*(dst+dst_pitch))) << 9 & 0xF800)|
-				((_g(*(dst-dst_pitch)) + _g(*(dst+dst_pitch))) << 5 & 0x07E0)|
-				((_b(*(dst-dst_pitch)) + _b(*(dst+dst_pitch))) >> 1 & 0x001F);
+			Uint16 C1 = *(dst-dst_pitch),C2 = *(dst+dst_pitch);
+			*dst = (((C1 & 0xF7DE) >> 1) + ((C2 & 0xF7DE) >> 1)) + (C1 & C2 & 0x0821);
 
 			dst++;
 		}
-
-#undef _r
-#undef _g
-#undef _b
 	}
 }
 
