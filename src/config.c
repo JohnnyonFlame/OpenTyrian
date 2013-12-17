@@ -708,7 +708,7 @@ const char *get_user_directory( void )
 	
 	if (strlen(user_dir) == 0)
 	{
-#ifdef TARGET_UNIX
+#if defined(TARGET_UNIX) || defined(TARGET_DINGUX)
 		if (getenv("HOME"))
 			snprintf(user_dir, sizeof(user_dir), "%s/.opentyrian", getenv("HOME"));
 #else
@@ -894,7 +894,7 @@ void JE_loadConfiguration( void )
 
 void JE_saveConfiguration( void )
 {
-#ifdef TARGET_UNIX
+#if defined(TARGET_UNIX) || defined(TARGET_DINGUX)
 	if (getenv("HOME"))
 	{
 		char dir[1000];
