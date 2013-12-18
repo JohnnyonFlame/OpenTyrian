@@ -16,7 +16,7 @@ SDL_CONFIG := sdl-config
 
 SRCS := $(wildcard src/*.c)
 OBJS := $(SRCS:src/%.c=obj/%.o)
-OPK  := $(TARGET) linux/icons/tyrian-32.png gcw0/default.gcw0.desktop data/
+OPK  := $(TARGET) gcw0/opentyrian.png gcw0/default.gcw0.desktop data/
 
 
 # FLAGS ####################################################

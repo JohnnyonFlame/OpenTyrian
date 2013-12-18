@@ -5,5 +5,5 @@ Exec=opentyrian
 Terminal=false
 Type=Application
 StartupNotify=true
-Icon=tyrian-32
+Icon=opentyrian
 Categories=games;
