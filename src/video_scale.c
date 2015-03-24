@@ -37,6 +37,7 @@ static void scale2x_16( SDL_Surface *src_surface, SDL_Surface *dst_surface );
 static void scale3x_32( SDL_Surface *src_surface, SDL_Surface *dst_surface );
 static void scale3x_16( SDL_Surface *src_surface, SDL_Surface *dst_surface );
 #else
+
 static void s1dot2_16( SDL_Surface *src_surface, SDL_Surface *dst_surface );
 static void s1dot2_32( SDL_Surface *src_surface, SDL_Surface *dst_surface );
 
@@ -54,6 +55,9 @@ const struct Scalers scalers[] =
 {
 #if defined(TARGET_GP2X) || defined(TARGET_DINGUX)
 	{ 320,           240,            no_scale, nn_16,      nn_32,      "None" },
+#if defined(TARGET_GCW0)
+	{ 320,           200,            shw_8,    shw_16,     shw_32,     "Scale HW"},
+#endif
 	{ 320,           240,            NULL,     s1dot2_16,  s1dot2_32,  "Scale1.2x" },
 	{ 320,           240,            NULL,     hqs1dot2_16,hqs1dot2_32,"hq1.2x" },
 #else
@@ -88,6 +92,8 @@ void set_scaler_by_name( const char *name )
 
 void no_scale( SDL_Surface *src_surface, SDL_Surface *dst_surface )
 {
+	//TODO:: Investigate- doesn't seem quite right
+
 	Uint8 *src = src_surface->pixels,
 	      *dst = dst_surface->pixels;
 	
@@ -605,4 +611,21 @@ static void hqs1dot2_32( SDL_Surface *src_surface, SDL_Surface *dst_surface )
 	}
 }
 
+#endif
+
+#if defined (TARGET_GCW0)
+void shw_8( SDL_Surface *src_surface, SDL_Surface *dst_surface )
+{
+	no_scale(src_surface, dst_surface);
+}
+
+void shw_16( SDL_Surface *src_surface, SDL_Surface *dst_surface )
+{
+	nn_16(src_surface, dst_surface);
+}
+
+void shw_32( SDL_Surface *src_surface, SDL_Surface *dst_surface )
+{
+	nn_32(src_surface, dst_surface);
+}
 #endif

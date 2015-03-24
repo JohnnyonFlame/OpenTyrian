@@ -134,7 +134,22 @@ bool init_scaler( unsigned int new_scaler, bool fullscreen )
 		scaler_function = NULL;
 		break;
 	}
-	
+
+#ifdef TARGET_GCW0
+	FILE* aspect_ratio_file = fopen("/sys/devices/platform/jz-lcd.0/keep_aspect_ratio", "w");
+	if (aspect_ratio_file)
+	{
+		if ((scaler_function == shw_8)
+				|| (scaler_function == shw_16)
+				|| (scaler_function == shw_32))
+			fwrite("0", 1, 1, aspect_ratio_file);
+		else
+			fwrite("1", 1, 1, aspect_ratio_file);
+
+		fclose(aspect_ratio_file);
+	}
+#endif
+
 	if (scaler_function == NULL)
 	{
 		assert(false);

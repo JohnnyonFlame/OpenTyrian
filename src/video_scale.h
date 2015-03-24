@@ -38,5 +38,11 @@ extern const uint scalers_count;
 
 void set_scaler_by_name( const char *name );
 
+#if defined(TARGET_GCW0)
+void shw_8( SDL_Surface *src_surface, SDL_Surface *dst_surface );
+void shw_16( SDL_Surface *src_surface, SDL_Surface *dst_surface );
+void shw_32( SDL_Surface *src_surface, SDL_Surface *dst_surface );
+#endif
+
 #endif /* VIDEO_SCALE_H */
 
