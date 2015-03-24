@@ -68,7 +68,11 @@ int can_init_scaler( unsigned int new_scaler, bool fullscreen )
 	
 	int w = scalers[new_scaler].width,
 	    h = scalers[new_scaler].height;
+#if defined(GCWZERO)
+	int flags = SDL_HWSURFACE | SDL_HWPALETTE | (fullscreen ? SDL_FULLSCREEN : 0);
+#else
 	int flags = SDL_SWSURFACE | SDL_HWPALETTE | (fullscreen ? SDL_FULLSCREEN : 0);
+#endif
 	
 	// test each bitdepth
 	for (uint bpp = 32; bpp > 0; bpp -= 8)
@@ -97,12 +101,29 @@ bool init_scaler( unsigned int new_scaler, bool fullscreen )
 	int w = scalers[new_scaler].width,
 	    h = scalers[new_scaler].height;
 	int bpp = can_init_scaler(new_scaler, fullscreen);
+#if defined(GCWZERO)
+	int flags = SDL_HWSURFACE | SDL_HWPALETTE | (fullscreen ? SDL_FULLSCREEN : 0);
+#else
 	int flags = SDL_SWSURFACE | SDL_HWPALETTE | (fullscreen ? SDL_FULLSCREEN : 0);
+#endif
 	
 	if (bpp == 0)
 		return false;
 	
 	SDL_Surface *const surface = SDL_SetVideoMode(w, h, bpp, flags);
+
+#if defined(GCWZERO)	
+	FILE* aspect_ratio_file = fopen("/sys/devices/platform/jz-lcd.0/keep_aspect_ratio", "w");
+		if (aspect_ratio_file)
+		{ 
+			if (fullscreen)
+				fwrite("0", 1, 1, aspect_ratio_file);
+			else
+				fwrite("1", 1, 1, aspect_ratio_file);
+				
+			fclose(aspect_ratio_file);
+		}
+#endif
 	
 	if (surface == NULL)
 	{

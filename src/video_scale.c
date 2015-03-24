@@ -53,7 +53,11 @@ uint scaler;
 const struct Scalers scalers[] =
 {
 #if defined(TARGET_GP2X) || defined(TARGET_DINGUX)
+#if defined(GCWZERO)
+	{ 320,           200,            no_scale, nn_16,      nn_32,      "None" },
+#else
 	{ 320,           240,            no_scale, nn_16,      nn_32,      "None" },
+#endif /* GCWZERO */
 	{ 320,           240,            NULL,     s1dot2_16,  s1dot2_32,  "Scale1.2x" },
 	{ 320,           240,            NULL,     hqs1dot2_16,hqs1dot2_32,"hq1.2x" },
 #else
