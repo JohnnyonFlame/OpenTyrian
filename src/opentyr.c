@@ -88,7 +88,11 @@ void opentyrian_menu( void )
 	bool menu_items_disabled[] =
 	{
 		false,
+#if defined(TARGET_GCW0)
+		true,
+#else
 		!can_init_any_scaler(false) || !can_init_any_scaler(true),
+#endif
 		false,
 		// false,
 		false,
